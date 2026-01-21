@@ -19,15 +19,20 @@ if (GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
 endif()
 
 add_subdirectory(external/yaml-cpp)
+add_subdirectory(external/SQLiteCpp)
 
 add_executable(${PROJECT_NAME} main.cpp)
 
 target_include_directories(${PROJECT_NAME} 
   PUBLIC external/yaml-cpp/include
+  PUBLIC external/SQLiteCpp/include
+
 )
 
 target_link_directories(${PROJECT_NAME} 
   PRIVATE external/yaml-cpp/src
+  PRIVATE external/SQLiteCpp/src
 )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC yaml-cpp::yaml-cpp)
+target_link_libraries(${PROJECT_NAME} PUBLIC SQLiteCpp)
