@@ -1,11 +1,9 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(Metapp VERSION 0.1)
-
-add_subdirectory(external/yaml-cpp)
+project(Metapp VERSION)
 
 find_package(Git QUIET)
-if (GIT_FOUND AND EXISTS "${POJECT_NAME}/.git")
+if (GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
   option (GIT_SUBMODULE "Check submodules during build" ON)
   if (GIT_SUBMODULE)
     message(STATUS "Adding submodule")
@@ -20,11 +18,9 @@ if (GIT_FOUND AND EXISTS "${POJECT_NAME}/.git")
   endif()
 endif()
 
-add_executable(${PROJECT_NAME} main.cpp)
+add_subdirectory(external/yaml-cpp)
 
-target_include_directories(${PROJECT_NAME} 
-  PUBLIC ${PROJECT_BINARY_DIR}
-)
+add_executable(${PROJECT_NAME} main.cpp)
 
 target_include_directories(${PROJECT_NAME} 
   PUBLIC external/yaml-cpp/include
