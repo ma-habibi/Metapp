@@ -20,19 +20,24 @@ endif()
 
 add_subdirectory(external/yaml-cpp)
 add_subdirectory(external/SQLiteCpp)
+add_subdirectory(external/argparse)
 
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME} main.cpp
+  main.cpp
+  Core.cpp
+  Core.h
+)
 
 target_include_directories(${PROJECT_NAME} 
   PUBLIC external/yaml-cpp/include
   PUBLIC external/SQLiteCpp/include
-
+  PUBLIC external/argparse/include
 )
 
-target_link_directories(${PROJECT_NAME} 
-  PRIVATE external/yaml-cpp/src
-  PRIVATE external/SQLiteCpp/src
+target_link_libraries(${PROJECT_NAME}
+  PUBLIC yaml-cpp::yaml-cpp
+  PUBLIC SQLiteCpp
+  PUBLIC argparse
 )
 
-target_link_libraries(${PROJECT_NAME} PUBLIC yaml-cpp::yaml-cpp)
-target_link_libraries(${PROJECT_NAME} PUBLIC SQLiteCpp)
+target_compile_features(Metapp PRIVATE cxx_std_17)
