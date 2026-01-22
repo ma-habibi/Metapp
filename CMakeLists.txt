@@ -22,10 +22,10 @@ add_subdirectory(external/yaml-cpp)
 add_subdirectory(external/SQLiteCpp)
 add_subdirectory(external/argparse)
 
-add_executable(${PROJECT_NAME} main.cpp
-  main.cpp
-  Core.cpp
-  Core.h
+add_executable(${PROJECT_NAME} src/main.cpp
+  src/main.cpp
+  src/parse_todo.cpp
+  src/parse_todo.h
 )
 
 target_include_directories(${PROJECT_NAME} 
