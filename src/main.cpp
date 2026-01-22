@@ -1,4 +1,7 @@
+#include "parse_todo.h"
+
 #include <argparse/argparse.hpp>
+#include <yaml-cpp/yaml.h>
 
 #include <filesystem>
 #include <iostream>
@@ -21,5 +24,9 @@ void parse_arguments(argparse::ArgumentParser &program, int argc, char *argv[]) 
 int main(int argc, char *argv[]) {
   argparse::ArgumentParser program(argv[0]);
   parse_arguments(program, argc, argv);
+  std::filesystem::path todo_path{program.get<std::string>("todo")};
+
+  YAML::Node todo_node = parse_todo::ParseTodo::read(todo_path);
+
   return 0;
 }
