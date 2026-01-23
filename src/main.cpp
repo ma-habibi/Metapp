@@ -19,9 +19,9 @@ void parse_arguments(argparse::ArgumentParser &program, int argc,
                      char *argv[]) {
   std::string cwd = std::filesystem::current_path();
   program.add_argument("-t", "--todo")
-      .default_value(std::string(cwd.append("/resources/todo.yaml")));
+      .default_value(std::string(cwd + "/resources/todo.yaml"));
   program.add_argument("-d", "--database")
-      .default_value(std::string(cwd.append("/resources/example.db3")));
+      .default_value(std::string(cwd + "/resources/example.db3"));
   try {
     program.parse_args(argc, argv);
   } catch (const std::exception &err) {
