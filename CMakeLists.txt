@@ -26,6 +26,8 @@ add_executable(${PROJECT_NAME} src/main.cpp
   src/main.cpp
   src/parse_todo.cpp
   src/parse_todo.h
+        src/db_handler.cpp
+        src/db_handler.h
 )
 
 target_include_directories(${PROJECT_NAME} 
