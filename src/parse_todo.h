@@ -8,8 +8,8 @@
 namespace parse_todo {
 class ParseTodo {
 public:
-  static YAML::Node read(const std::filesystem::path& path);
+  static YAML::Node read(const std::filesystem::path &path);
 };
-} // parse_todo
+} // namespace parse_todo
 
-#endif //PARSE_TODO_H
+#endif // PARSE_TODO_H

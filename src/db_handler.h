@@ -6,8 +6,8 @@
 namespace db_handler {
 class DbHandler {
 public:
-  static SQLite::Database update_db(const std::filesystem::path& db_path);
+  static SQLite::Database update_db(const std::filesystem::path &db_path);
 };
-} // db_handler
+} // namespace db_handler
 
-#endif //DB_HANDLER_H
+#endif // DB_HANDLER_H

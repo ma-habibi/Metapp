@@ -1,9 +1,9 @@
-#include "parse_todo.h"
 #include "db_handler.h"
+#include "parse_todo.h"
 
+#include <SQLiteCpp/SQLiteCpp.h>
 #include <argparse/argparse.hpp>
 #include <yaml-cpp/yaml.h>
-#include <SQLiteCpp/SQLiteCpp.h>
 
 #include <filesystem>
 #include <iostream>
@@ -37,10 +37,10 @@ int main(int argc, char *argv[]) {
   YAML::Node todo_node = parse_todo::ParseTodo::read(todo_path);
 
   try {
-    SQLite::Database updated_db = db_handler::DbHandler::update_db(program.get<std::string>("database"));
+    SQLite::Database updated_db =
+        db_handler::DbHandler::update_db(program.get<std::string>("database"));
     SQLite::Statement query(updated_db, "SELECT * FROM test");
-  }
-  catch (std::exception &e) {
+  } catch (std::exception &e) {
     std::cerr << e.what();
     return 1;
   }
