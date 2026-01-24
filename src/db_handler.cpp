@@ -62,8 +62,18 @@ SQLite::Database DbHandler::update_db(const std::filesystem::path &db_path, cons
     std::cout << col << ", ";
   std::cout << ']' << std::endl;
 
-  std::exit(0);
-
+  for (auto &column : new_columns_from_yaml) {
+    try {
+      std::stringstream ss;
+      ss << "ALTER TABLE todo ADD COLUMN " << column << " TEXT";
+      std::string cmd = ss.str();
+      std::cout << cmd << std::endl;
+      loaded_db.exec(cmd);
+    }
+    catch (std::exception &e) {
+      std::cerr << e.what() << std::endl;
+    }
+  }
   return loaded_db;
 }
 } // namespace db_handler
