@@ -26,10 +26,10 @@ SQLite::Database DbHandler::load_db(const std::filesystem::path &db_path) {
 SQLite::Database DbHandler::update_db(const std::filesystem::path &db_path, const YAML::Node &todo_node) {
   SQLite::Database loaded_db = load_db(db_path);
 
-  std::list<std::string> new_columns_from_yaml;
+  std::list<std::string> columns_from_yaml;
   for (auto it = todo_node.begin(); it != todo_node.end(); ++it) {
     try {
-      new_columns_from_yaml.push_back(it->first.as<std::string>());
+      columns_from_yaml.push_back(it->first.as<std::string>());
     }
     catch (std::exception &e) {
       std::cerr << e.what() << std::endl;
@@ -38,7 +38,7 @@ SQLite::Database DbHandler::update_db(const std::filesystem::path &db_path, cons
 
   std::cout << "All columns read from YAML are: ";
   std::cout << '[';
-  for (auto &col : new_columns_from_yaml)
+  for (auto &col : columns_from_yaml)
     std::cout << col << ", ";
   std::cout << ']' << std::endl;
 
@@ -46,6 +46,7 @@ SQLite::Database DbHandler::update_db(const std::filesystem::path &db_path, cons
 
   SQLite::Statement select_all_query(loaded_db, "SELECT * FROM todo");
 
+  std::list<std::string> new_columns_from_yaml(columns_from_yaml);
   for (int i = 0; i < select_all_query.getColumnCount(); ++i) {
     auto found = std::find(new_columns_from_yaml.begin(), new_columns_from_yaml.end(),
                            select_all_query.getColumnName(i));
@@ -56,7 +57,7 @@ SQLite::Database DbHandler::update_db(const std::filesystem::path &db_path, cons
     }
   }
 
-  std::cout << "The columns from YAML which are new and must be inserted: ";
+  std::cout << "the columns from yaml which are new and must be inserted: ";
   std::cout << '[';
   for (auto &col : new_columns_from_yaml)
     std::cout << col << ", ";
