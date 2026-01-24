@@ -1,6 +1,7 @@
 #include "db_handler.h"
 
 #include <SQLiteCpp/SQLiteCpp.h>
+#include <yaml-cpp/yaml.h>
 
 #include <algorithm>
 #include <iostream>
@@ -22,7 +23,7 @@ SQLite::Database DbHandler::load_db(const std::filesystem::path &db_path) {
   }
 }
 
-SQLite::Database DbHandler::update_db(const std::filesystem::path &db_path) {
+SQLite::Database DbHandler::update_db(const std::filesystem::path &db_path, const YAML::Node &todo_node) {
   SQLite::Database loaded_db = load_db(db_path);
   return loaded_db;
 }
