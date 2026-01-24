@@ -36,11 +36,34 @@ SQLite::Database DbHandler::update_db(const std::filesystem::path &db_path, cons
     }
   }
 
-  std::cout << "New columns from YAML are: ";
+  std::cout << "All columns read from YAML are: ";
   std::cout << '[';
   for (auto &col : new_columns_from_yaml)
     std::cout << col << ", ";
   std::cout << ']' << std::endl;
+
+  loaded_db.exec("CREATE TABLE IF NOT EXISTS todo (id INTEGER PRIMARY KEY)");
+
+  SQLite::Statement select_all_query(loaded_db, "SELECT * FROM todo");
+
+  for (int i = 0; i < select_all_query.getColumnCount(); ++i) {
+    auto found = std::find(new_columns_from_yaml.begin(), new_columns_from_yaml.end(),
+                           select_all_query.getColumnName(i));
+    if (found != new_columns_from_yaml.end()) {
+      std::cout << "Element " << *found << " already exists in the table."
+                << std::endl;
+      new_columns_from_yaml.erase(found);
+    }
+  }
+
+  std::cout << "The columns from YAML which are new and must be inserted: ";
+  std::cout << '[';
+  for (auto &col : new_columns_from_yaml)
+    std::cout << col << ", ";
+  std::cout << ']' << std::endl;
+
+  std::exit(0);
+
   return loaded_db;
 }
 } // namespace db_handler
