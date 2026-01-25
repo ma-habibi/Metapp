@@ -8,6 +8,9 @@ namespace db_handler {
 class DbHandler {
 private:
   static SQLite::Database load_db(const std::filesystem::path &db_path);
+  static bool column_exists(const SQLite::Database &db,
+                            const std::string &table,
+                            const std::string &column);
 
 public:
   static SQLite::Database update_db(const std::filesystem::path &db_path,

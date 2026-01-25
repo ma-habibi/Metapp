@@ -3,7 +3,6 @@
 #include <SQLiteCpp/SQLiteCpp.h>
 #include <yaml-cpp/yaml.h>
 
-#include <algorithm>
 #include <iostream>
 #include <list>
 #include <sstream>
@@ -21,6 +20,17 @@ std::ostream &operator<<(std::ostream &stream, std::list<std::string> l) {
   }
   stream << "]";
   return stream;
+}
+
+bool DbHandler::column_exists(const SQLite::Database &db,
+                              const std::string &table,
+                              const std::string &column) {
+  SQLite::Statement query(
+      db, "SELECT count(*) FROM pragma_table_info(?) WHERE name=?");
+  query.bind(1, table);
+  query.bind(2, column);
+  (void)query.executeStep();
+  return (1 == query.getColumn(0).getInt());
 }
 
 SQLite::Database DbHandler::load_db(const std::filesystem::path &db_path) {
@@ -52,6 +62,27 @@ SQLite::Database DbHandler::update_db(const std::filesystem::path &db_path,
       loaded_db.exec(cmd);
     }
   }
+
+  /*
+   *impl std::bool column_exists(db, std::string tab, std::string col)
+   *  using SELECT count(*) FROM pragma_table_info(tab) WHERE name=col;
+   *
+   * for yml_section = node(all)
+   *  if table exist
+   *    log
+   *  else
+   *    insert table
+   *    log
+   *
+   *  for yml_task  = node[yml_section]
+   *    if column_exists
+   *      log
+   *      INSERT to update value
+   *    else
+   *      log
+   *      INSERT to initiate the value
+   */
+
   return loaded_db;
 }
 } // namespace db_handler
