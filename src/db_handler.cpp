@@ -23,55 +23,55 @@ SQLite::Database DbHandler::load_db(const std::filesystem::path &db_path) {
   }
 }
 
-SQLite::Database DbHandler::update_db(const std::filesystem::path &db_path, const YAML::Node &todo_node) {
-  SQLite::Database loaded_db = load_db(db_path);
-
-  std::list<std::string> columns_from_yaml;
+SQLite::Database DbHandler::update_db(const std::filesystem::path &db_path,
+                                      const YAML::Node &todo_node) {
+  std::list<std::string> tables_from_yaml;
   for (auto it = todo_node.begin(); it != todo_node.end(); ++it) {
     try {
-      columns_from_yaml.push_back(it->first.as<std::string>());
-    }
-    catch (std::exception &e) {
+      tables_from_yaml.push_back(it->first.as<std::string>());
+    } catch (std::exception &e) {
       std::cerr << e.what() << std::endl;
     }
   }
-
-  std::cout << "All columns read from YAML are: ";
+  std::cout << "All tables read from YAML are: ";
   std::cout << '[';
-  for (auto &col : columns_from_yaml)
-    std::cout << col << ", ";
+  for (auto &table : tables_from_yaml)
+    std::cout << table << ", ";
   std::cout << ']' << std::endl;
 
-  loaded_db.exec("CREATE TABLE IF NOT EXISTS todo (id INTEGER PRIMARY KEY)");
+  SQLite::Database loaded_db = load_db(db_path);
 
-  SQLite::Statement select_all_query(loaded_db, "SELECT * FROM todo");
-
-  std::list<std::string> new_columns_from_yaml(columns_from_yaml);
-  for (int i = 0; i < select_all_query.getColumnCount(); ++i) {
-    auto found = std::find(new_columns_from_yaml.begin(), new_columns_from_yaml.end(),
-                           select_all_query.getColumnName(i));
-    if (found != new_columns_from_yaml.end()) {
-      std::cout << "Element " << *found << " already exists in the table."
+  // Filter out to obtain non-existing tables
+  std::list<std::string> new_tables_from_yaml(tables_from_yaml);
+  SQLite::Statement select_tables_query(
+      loaded_db,
+      "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;");
+  while (select_tables_query.executeStep()) {
+    auto search = select_tables_query.getColumn(0).getString();
+    auto found = std::find(new_tables_from_yaml.begin(),
+                           new_tables_from_yaml.end(), search);
+    if (found != new_tables_from_yaml.end()) {
+      std::cout << "Table " << *found << " already exists in the table."
                 << std::endl;
-      new_columns_from_yaml.erase(found);
+      new_tables_from_yaml.erase(found);
     }
   }
-
-  std::cout << "the columns from yaml which are new and must be inserted: ";
+  std::cout << "the tables from yaml which are new and must be inserted: ";
   std::cout << '[';
-  for (auto &col : new_columns_from_yaml)
+  for (auto &col : new_tables_from_yaml)
     std::cout << col << ", ";
   std::cout << ']' << std::endl;
 
-  for (auto &column : new_columns_from_yaml) {
+  for (auto &table : new_tables_from_yaml) {
     try {
-      std::stringstream ss;
-      ss << "ALTER TABLE todo ADD COLUMN " << column << " TEXT";
-      std::string cmd = ss.str();
-      std::cout << cmd << std::endl;
+      std::cout << "Creating table " << table << "." << std::endl;
+      ;
+      std::stringstream cmd_stream;
+      cmd_stream << "CREATE TABLE IF NOT EXISTS " << table
+                 << "(id INTEGER PRIMARY KEY)";
+      std::string cmd = cmd_stream.str();
       loaded_db.exec(cmd);
-    }
-    catch (std::exception &e) {
+    } catch (std::exception &e) {
       std::cerr << e.what() << std::endl;
     }
   }
