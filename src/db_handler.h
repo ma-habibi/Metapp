@@ -10,8 +10,11 @@ private:
   static SQLite::Database load_db(const std::filesystem::path &db_path);
 
 public:
-  static SQLite::Database update_db(const std::filesystem::path &db_path, const YAML::Node &todo_node);
+  static SQLite::Database update_db(const std::filesystem::path &db_path,
+                                    const YAML::Node &todo_node);
 };
+
+std::ostream &operator<<(std::ostream &stream, std::list<std::string> l);
 } // namespace db_handler
 
 #endif // DB_HANDLER_H

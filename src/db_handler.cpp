@@ -10,6 +10,19 @@
 
 namespace db_handler {
 
+std::ostream &operator<<(std::ostream &stream, std::list<std::string> l) {
+  stream << "[";
+  auto last = l.back();
+  for (auto it = l.begin(); it != l.end(); ++it) {
+    stream << *it;
+    if (*it != last) {
+      stream << ", ";
+    }
+  }
+  stream << "]";
+  return stream;
+}
+
 SQLite::Database DbHandler::load_db(const std::filesystem::path &db_path) {
   try {
     SQLite::Database database(db_path,
@@ -33,11 +46,9 @@ SQLite::Database DbHandler::update_db(const std::filesystem::path &db_path,
       std::cerr << e.what() << std::endl;
     }
   }
-  std::cout << "All tables read from YAML are: ";
-  std::cout << '[';
-  for (auto &table : tables_from_yaml)
-    std::cout << table << ", ";
-  std::cout << ']' << std::endl;
+
+  std::cout << "All tables read from YAML are: " << tables_from_yaml << "."
+            << std::endl;
 
   SQLite::Database loaded_db = load_db(db_path);
 
@@ -56,11 +67,8 @@ SQLite::Database DbHandler::update_db(const std::filesystem::path &db_path,
       new_tables_from_yaml.erase(found);
     }
   }
-  std::cout << "the tables from yaml which are new and must be inserted: ";
-  std::cout << '[';
-  for (auto &col : new_tables_from_yaml)
-    std::cout << col << ", ";
-  std::cout << ']' << std::endl;
+  std::cout << "the tables from yaml which are new and must be inserted: "
+            << new_tables_from_yaml << "." << std::endl;
 
   for (auto &table : new_tables_from_yaml) {
     try {
