@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(Metapp VERSION)
+project(Metapp)
 
 find_package(Git QUIET)
 if (GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
@@ -20,19 +20,26 @@ endif()
 
 add_subdirectory(external/yaml-cpp)
 add_subdirectory(external/SQLiteCpp)
+add_subdirectory(external/argparse)
 
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME} src/main.cpp
+  src/main.cpp
+  src/parse_todo.cpp
+  src/parse_todo.h
+  src/db_handler.cpp
+  src/db_handler.h
+)
 
 target_include_directories(${PROJECT_NAME} 
   PUBLIC external/yaml-cpp/include
   PUBLIC external/SQLiteCpp/include
-
+  PUBLIC external/argparse/include
 )
 
-target_link_directories(${PROJECT_NAME} 
-  PRIVATE external/yaml-cpp/src
-  PRIVATE external/SQLiteCpp/src
+target_link_libraries(${PROJECT_NAME}
+  PUBLIC yaml-cpp::yaml-cpp
+  PUBLIC SQLiteCpp
+  PUBLIC argparse
 )
 
-target_link_libraries(${PROJECT_NAME} PUBLIC yaml-cpp::yaml-cpp)
-target_link_libraries(${PROJECT_NAME} PUBLIC SQLiteCpp)
+target_compile_features(Metapp PRIVATE cxx_std_17)
