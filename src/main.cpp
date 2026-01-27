@@ -37,9 +37,8 @@ int main(int argc, char *argv[]) {
   YAML::Node todo_node = parse_todo::ParseTodo::read(todo_path);
 
   try {
-    SQLite::Database updated_db =
-        db_handler::DbHandler::update_db(program.get<std::string>("database"));
-    SQLite::Statement query(updated_db, "SELECT * FROM test");
+    SQLite::Database updated_db = db_handler::DbHandler::update_db(
+        program.get<std::string>("database"), todo_node);
   } catch (std::exception &e) {
     std::cerr << e.what();
     return 1;

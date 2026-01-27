@@ -50,38 +50,39 @@ SQLite::Database DbHandler::update_db(const std::filesystem::path &db_path,
                                       const YAML::Node &todo_node) {
   SQLite::Database loaded_db = load_db(db_path);
 
-  for (auto it = todo_node.begin(); it != todo_node.end(); ++it) {
-    auto yaml_section = it->first.as<std::string>();
-    if (loaded_db.tableExists(yaml_section)) {
-      std::cout << "Table " << yaml_section
+  for (auto yaml_section_it = todo_node.begin();
+       yaml_section_it != todo_node.end(); ++yaml_section_it) {
+    auto yaml_section_name = yaml_section_it->first.as<std::string>();
+    if (loaded_db.tableExists(yaml_section_name)) {
+      std::cout << "Table " << yaml_section_name
                 << " already exists in the database." << std::endl;
     } else {
-      std::cout << "Creating new table " << yaml_section << "." << std::endl;
+      std::cout << "Creating new table " << yaml_section_name << "."
+                << std::endl;
       std::string cmd =
-          "CREATE TABLE " + yaml_section + "(id INTEGER PRIMARY KEY)";
+          "CREATE TABLE " + yaml_section_name + "(id INTEGER PRIMARY KEY)";
       loaded_db.exec(cmd);
     }
+    for (auto yaml_task_it = todo_node[yaml_section_name].begin();
+         yaml_task_it != todo_node[yaml_section_name].end(); ++yaml_task_it) {
+      auto yaml_task_name = yaml_task_it->first.as<std::string>();
+      auto yaml_task_value = yaml_task_it->second.as<std::string>();
+      if (DbHandler::column_exists(loaded_db, yaml_section_name,
+                                   yaml_task_name)) {
+        std::cout << "Found column '" << yaml_task_name << "' in the table."
+                  << std::endl;
+      } else {
+        std::cout << "Creating new column '" << yaml_task_name
+                  << "' in the table." << std::endl;
+        loaded_db.exec("ALTER TABLE " + yaml_section_name + " ADD COLUMN " +
+                       yaml_task_name);
+      }
+      std::cout << "Inserting value: '" << yaml_task_value
+                << "' into the column '" << yaml_task_name << "'." << std::endl;
+      loaded_db.exec("INSERT INTO " + yaml_section_name + "(" + yaml_task_name +
+                     ")" + "VALUES(" + yaml_task_value + ")");
+    }
   }
-
-  /*
-   *impl std::bool column_exists(db, std::string tab, std::string col)
-   *  using SELECT count(*) FROM pragma_table_info(tab) WHERE name=col;
-   *
-   * for yml_section = node(all)
-   *  if table exist
-   *    log
-   *  else
-   *    insert table
-   *    log
-   *
-   *  for yml_task  = node[yml_section]
-   *    if column_exists
-   *      log
-   *      INSERT to update value
-   *    else
-   *      log
-   *      INSERT to initiate the value
-   */
 
   return loaded_db;
 }
