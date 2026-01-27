@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(Metapp VERSION)
+project(Metapp)
 
 find_package(Git QUIET)
 if (GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
@@ -26,8 +26,8 @@ add_executable(${PROJECT_NAME} src/main.cpp
   src/main.cpp
   src/parse_todo.cpp
   src/parse_todo.h
-        src/db_handler.cpp
-        src/db_handler.h
+  src/db_handler.cpp
+  src/db_handler.h
 )
 
 target_include_directories(${PROJECT_NAME} 
