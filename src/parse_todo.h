@@ -9,6 +9,7 @@ namespace parse_todo {
 class ParseTodo {
 public:
   static YAML::Node read(const std::filesystem::path &path);
+  static void purge(const std::filesystem::path &path);
 };
 } // namespace parse_todo
 

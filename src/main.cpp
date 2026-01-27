@@ -43,6 +43,7 @@ int main(int argc, char *argv[]) {
     std::cerr << e.what();
     return 1;
   }
+  parse_todo::ParseTodo::purge(todo_path);
 
   return 0;
 }
